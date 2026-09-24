@@ -91,3 +91,32 @@ function pengaturanApprovalAmbil_() {
 //    var hasil = pengaturanAmbil_();
 //    hasil.approval = pengaturanApprovalAmbil_();
 //    return hasil;
+
+// ==========================================================================
+// === 5) JS.html -- di bukaPengaturanPerusahaan() ===
+// ==========================================================================
+// Toggle diisi dari nilai TERSIMPAN (pa.diatur), bukan pa.aktif -- pa.aktif
+// ikut mati kalau paket terbaca bukan Premium, sehingga toggle tampil mati
+// walau pengaturannya sebenarnya tersimpan menyala.
+//
+// a) GANTI baris fallback:
+//      apiCall('pengaturanApprovalAmbil', {}).catch(function () { return { aktif: false, jumlahTingkat: 1 }; })
+//    dengan:
+//      apiCall('pengaturanApprovalAmbil', {}).catch(function () { return { aktif: false, diatur: false, jumlahTingkat: 1 }; })
+//
+// b) Tepat di bawah baris:
+//      var pa = hasil[2] || { aktif: false, jumlahTingkat: 1 };
+//    TAMBAHKAN:
+//      var approvalDiatur = pa.diatur !== undefined ? pa.diatur : pa.aktif;
+//
+// c) GANTI potongan html switch:
+//      '<input class="form-check-input" type="checkbox" role="switch" id="swApprovalAktif"' + (pa.aktif ? ' checked' : '') + '>' +
+//      '<label class="form-check-label small" for="swApprovalAktif">Aktifkan Approval Berjenjang</label>' +
+//      '</div>' +
+//    dengan:
+//      '<input class="form-check-input" type="checkbox" role="switch" id="swApprovalAktif"' + (approvalDiatur ? ' checked' : '') + '>' +
+//      '<label class="form-check-label small" for="swApprovalAktif">Aktifkan Approval Berjenjang</label>' +
+//      '</div>' +
+//      (approvalDiatur && !pa.aktif
+//        ? '<div class="small text-warning mb-2">Tersimpan aktif, tapi belum berlaku karena paket lisensi saat ini bukan Premium.</div>'
+//        : '') +
